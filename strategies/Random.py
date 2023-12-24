@@ -31,7 +31,7 @@ class DefectSometimesCooperate(Strategy):
         return random.choices((0, 1), weights=(0.9, 0.1), k=1)[0]
 
 
-class Joss(Strategy):
+class SelfishTFT(Strategy):
     """
     Classic Tit for Tat, but it defects 10% of the time, even when the opponent cooperates.
     """
@@ -40,7 +40,22 @@ class Joss(Strategy):
             return 1
         if history[-1][1] == 0:
             return 0
-        elif random.random() <= 0.1:
-            # 10% chance to defect once in a while
+        if random.random() <= 0.1:
+            # 10% chance to defect for cooperation, once in a while
             return 0
         return 1
+
+
+class GenerousTFT(Strategy):
+    """
+    Classic Tit for Tat, but it cooperates 10% of the time, even when the opponent defects.
+    """
+    def play(self, history):
+        if not history:
+            return 1
+        if history[-1][1] == 1:
+            return 1
+        if random.random() <= 0.1:
+            # 10% chance to cooperate for defection, once in a while
+            return 1
+        return 0
