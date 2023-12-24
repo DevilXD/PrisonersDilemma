@@ -1,8 +1,8 @@
 import os
 import inspect
 import importlib
-from math import floor, log10
 from itertools import combinations
+from math import floor, log10, comb
 from typing import Optional, List, DefaultDict, Type
 
 from strategy import Strategy, History
@@ -13,7 +13,7 @@ from constants import OUTCOMES, LETTERS, ROUNDS, ROUND_LEN
 # This one will be ran first, before all others
 # Use an empty string to disable
 compare: str = ""
-
+with_stochastic: bool = True
 
 # Select strategies to exclude
 # Useful if you don't want to test all strategies, without moving files out of the folder
@@ -65,20 +65,19 @@ def match(strat1_cls: Type[Strategy], strat2_cls: Type[Strategy]) -> History:
     history2: History = []
     for i in range(ROUND_LEN):
         result1: int = strat1.play(history1)
-        if not (isinstance(result1, int) and 0 <= result1 <= 2):
+        if isinstance(result1, bool):
+            result1 = int(result1)
+        if not (isinstance(result1, int) and 0 <= result1 <= 1):
             raise RuntimeError(
                 f"Strategy {strat1_cls.name} returned an invalid move: {result1}"
             )
         result2: int = strat2.play(history2)
-        if not (isinstance(result2, int) and 0 <= result2 <= 2):
+        if isinstance(result2, bool):
+            result2 = int(result2)
+        if not (isinstance(result2, int) and 0 <= result2 <= 1):
             raise RuntimeError(
                 f"Strategy {strat2_cls.name} returned an invalid move: {result2}"
             )
-        # enforce int for bools
-        if isinstance(result1, bool):
-            result1 = int(result1)
-        if isinstance(result2, bool):
-            result2 = int(result2)
         history1.append((result1, result2))
         history2.append((result2, result1))
     return history1
@@ -88,7 +87,11 @@ def match(strat1_cls: Type[Strategy], strat2_cls: Type[Strategy]) -> History:
 scores: DefaultDict[str, float] = DefaultDict(float)
 with open("results.txt", "w", encoding="utf8") as file:
     file.write(f"Round length: {ROUND_LEN}\n\n\n")
-    for strat1_cls, strat2_cls in combinations(strategies, 2):
+    if not with_stochastic:
+        strategies = [s for s in strategies if not s.stochastic]
+    total_matches = comb(len(strategies), 2)
+    for i, (strat1_cls, strat2_cls) in enumerate(combinations(strategies, 2), start=1):
+        print(f"{i}/{total_matches}")
         strat1_name = strat1_cls.name
         strat2_name = strat2_cls.name
         file.write(f"{strat1_name}  VS  {strat2_name}\n")

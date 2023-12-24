@@ -20,4 +20,4 @@ ROUNDS = 10
 # is about to end, and using this information to their advantage.
 # Step of 2 guarantees the length to be even,
 # to give a fair chance for each strategy to retailiate back if needed.
-ROUND_LEN = random.randrange(100, 500, 2)
+ROUND_LEN = random.randrange(150, 300, 2)
