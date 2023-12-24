@@ -11,9 +11,19 @@ class TitForTat(Strategy):
         return history[-1][1]
 
 
+class SuspiciousTitForTat(Strategy):
+    """
+    Tit for Tat, but starts by defecting, then mimics the last opponent's move.
+    """
+    def play(self, history: History):
+        if not history:
+            return 0
+        return history[-1][1]
+
+
 class ReverseTitForTat(Strategy):
     """
-    Classic Tit for Tat, but starts by defecting, then mimics the reversed last opponent's move.
+    Tit for Tat, but starts by defecting, then mimics the reversed last opponent's move.
     """
     def play(self, history: History):
         if not history:
@@ -23,7 +33,7 @@ class ReverseTitForTat(Strategy):
 
 class TitFor2Tats(Strategy):
     """
-    Classic Tit for Tat, but requires two defections before retaliating.
+    Tit for Tat, but requires two defections before retaliating.
     Also known as Tit for Two Tats.
     """
     def play(self, history: History):
@@ -32,11 +42,21 @@ class TitFor2Tats(Strategy):
         return history[-1][1] + history[-2][1] > 0
 
 
+class DelayedTitForTat(Strategy):
+    """
+    Tit for Tat, but start by cooperating twice, then mimic the 2nd last opponent's move.
+    """
+    def play(self, history: History):
+        if len(history) < 2:
+            return 1
+        return history[-2][1]
+
+
 class GrimmTitForTat(Strategy):
     """
     Grimm Tit for Tat. Start by cooperating, then mimic the last opponent's move.
 
-    If at any point, your opponent defects twice in a row,
+    If at any point your opponent defects twice in a row,
     get angry and switch to defecting for the rest of the round.
     """
     def __init__(self):
